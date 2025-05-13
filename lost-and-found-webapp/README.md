@@ -10,10 +10,24 @@ lost-and-found-webapp
 │   ├── main
 │   │   ├── java
 │   │   │   └── SubmitItemServlet.java
+│   │   │   └── SubmitItemServlet.java
+│   │   │   └── TestDatabaseConnection.java
+│   │   │   └── TestMySQLConnector.java
 │   │   └── webapp
 │   │       ├── WEB-INF
 │   │       │   └── web.xml
+│   │       └── bg.jpg
 │   │       └── index.jsp
+│   │       └── post.jsp
+│   │       └── search.jsp
+│   │       └── styles.css
+├── target
+│   ├── classes
+│   ├── lost-and-found-webapp-1.0-SNAPSHOT
+│   ├── maven-archiver
+│   ├── maven-status
+│   │   └── maven-compiler-plugin
+│   └── lost-and-found-webapp-1.0-SNAPSHOT.war
 ├── pom.xml
 └── README.md
 ```
