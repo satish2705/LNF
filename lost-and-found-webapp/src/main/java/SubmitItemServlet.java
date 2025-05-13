@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 @MultipartConfig
 @WebServlet("/submitItem")
 public class SubmitItemServlet extends HttpServlet {
@@ -37,18 +39,23 @@ public class SubmitItemServlet extends HttpServlet {
         String filePath = uploadDirPath + File.separator + fileName;
 
         Files.copy(filePart.getInputStream(), new File(filePath).toPath());
-        LOGGER.info("File Path: " + filePath);
+        LOGGER.log(Level.INFO, "File Path: {0}", filePath);
 
         // Debugging logs
-        LOGGER.info("Item Name: " + itemName);
-        LOGGER.info("Description: " + description);
-        LOGGER.info("Status: " + status);
-        LOGGER.info("Contact: " + contact);
+        LOGGER.log(Level.INFO, "Item Name: {0}", itemName);
+        LOGGER.log(Level.INFO, "Description: {0}", description);
+        LOGGER.log(Level.INFO, "Status: {0}", status);
+        LOGGER.log(Level.INFO, "Contact: {0}", contact);
 
-        // Hardcoded database connection parameters
-        String dbUrl = "jdbc:mysql://localhost:3306/lostandfound";
-        String dbUser = "abhinai"; // Replace with your MySQL username
-        String dbPassword = "abhi"; // Replace with your MySQL password
+        // Database connection parameters
+        Dotenv dotenv = Dotenv.load();
+        String dbUrl = dotenv.get("DB_URL");
+        String dbUser = dotenv.get("DB_USER");
+        String dbPassword = dotenv.get("DB_PASSWORD");
+
+        if (dbUrl == null || dbUser == null || dbPassword == null) {
+            throw new ServletException("Database environment variables not set in .env file.");
+        }
 
         try (Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
             String sql = "INSERT INTO items (item_name, description, status, contact, image_path) VALUES (?, ?, ?, ?, ?)";
@@ -59,7 +66,7 @@ public class SubmitItemServlet extends HttpServlet {
                 stmt.setString(4, contact);
                 stmt.setString(5, filePath);
 
-                LOGGER.info("Executing query: " + stmt);
+                LOGGER.log(Level.INFO, "Executing query: {0}", stmt);
                 stmt.executeUpdate();
                 LOGGER.info("Data inserted successfully!");
             } catch (Exception e) {

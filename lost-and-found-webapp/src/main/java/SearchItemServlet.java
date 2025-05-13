@@ -18,6 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
+
 @WebServlet("/searchItems")
 public class SearchItemServlet extends HttpServlet {
     @Override
@@ -48,10 +51,15 @@ public class SearchItemServlet extends HttpServlet {
 
         int offset = (page - 1) * resultsPerPage;
 
-        // Hardcoded database connection parameters
-        String dbUrl = "jdbc:mysql://localhost:3306/lostandfound";
-        String dbUser = "abhinai"; // Replace with your MySQL username
-        String dbPassword = "abhi"; // Replace with your MySQL password
+        // Load database connection parameters from .env file
+        Dotenv dotenv = Dotenv.load();
+        String dbUrl = dotenv.get("DB_URL");
+        String dbUser = dotenv.get("DB_USER");
+        String dbPassword = dotenv.get("DB_PASSWORD");
+
+        if (dbUrl == null || dbUser == null || dbPassword == null) {
+            throw new ServletException("Database environment variables not set in .env file.");
+        }
 
         // Build SQL query dynamically
         StringBuilder sql = new StringBuilder("SELECT * FROM items WHERE (item_name LIKE ? OR description LIKE ?)");
